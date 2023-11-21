@@ -1,77 +1,65 @@
-<!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<!doctype html>
+<html>
 
 <head>
-  <!-- Meta tags  -->
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport"
-    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
-  <meta name="referrer" content="same-origin" />
-
-  <title>Carryflix</title>
-  <script src="https://cdn.jsdelivr.net/gh/Carryway/file@master/shaka-player.ui.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Carryway/file@master/controls.css" />
-  <style>
-    body {
-      background-color: #2b2b2b;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Carryflix</title>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3536272636654605"
+        crossorigin="anonymous"></script>
+    <!-- CDNBye Plugin -->
+    <script src="//cdn.jsdelivr.net/npm/cdnbye@latest"></script>
+    <!-- JWPlayer Hlsjs Provider -->
+    <script src="//cdn.jsdelivr.net/npm/cdnbye@latest/dist/jwplayer.provider.hls.js"></script>
+    <!-- JW Player Builds -->
+    <script src="//ssl.p.jwpcdn.com/player/v/8.21.2/jwplayer.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+        .jw-icon.jw-icon-inline.jw-button-color.jw-reset.jw-icon-logo {
+            background-image: url('https://i.ibb.co/LpbbsYm/Untitled-1.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            opacity: 0.5;
+        }
+    </style>
 </head>
 
 <body>
-  <div>
-    <div data-shaka-player-container="" shaka-controls="true" class="shaka-video-container"
-      data-shaka-player-cast-receiver-id="8D8C71A7">
-      <video poster="https://i.ibb.co/LpbbsYm/Untitled-1.png" data-shaka-player="" id="video"
-        style="width: 100%; height: 100%" class="shaka-video"></video>
-    </div>
-
+    <div id="player"></div>
+    <script src="//ssl.p.jwpcdn.com/player/v/8.21.0/jwplayer.js"></script>
+    <script> jwplayer.key = 'uoW6qHjBL3KNudxKVnwa3rt5LlTakbko9e6aQ6VUyKQ=';
+    </script>
     <script>
 
-      async function init() {
-        const video = document.getElementById('video');
-        const ui = video['ui'];
-        const controls = ui.getControls();
-        const player = controls.getPlayer();
-        const config = {
-          'seekBarColors': {
-            base: "#fff",
-            buffered: "#fff",
-            played: "#0078FF",
-          },
-          'volumeBarColors': {
-            base: 'rgba(255, 255, 255, 0.5)',
-            level: 'rgb(0, 119, 255)',
-          }
-        }
-        ui.configure(config);
+        var playerInstance = jwplayer("player");
 
-        player.configure({
-          drm: {
-            clearKeys: {
-              // 'key-id-in-hex': 'key-in-hex',
-              'fadd2720deff5925ab86df0819cd7775': 'f67ff08c7ebc779f6a6fcfc83835f65b'
-            }
-          }
+        playerInstance.setup({
+
+            playlist: [{
+                "title": "Carryflix.icu",
+                "image": "https://i.ibb.co/LpbbsYm/Untitled-1.png",
+                "sources": [
+                    {
+                        "default": false,
+                        "type": "dash",
+                        "file": 'https://mangga-live-cdn.mncnow.id/live/eds/soccerchannel-test/sa_dash_vmx/soccerchannel-test.mpd',
+                        "drm": {
+                            "clearkey": { "keyId": "4d38060bf41b3c29df0ec950ece6b5da", "key": "7ee9506b13480491d79b71c062ab5366" }
+                        },
+                        "label": "0"
+                    }
+                ]
+            }],
+            controls: true,
+            displaytitle: true,
+            fullscreen: "true",
+            primary: 'html5',
+            width: '100%',
+            height: '100%',
+            aspectratio: '16:9',
+            autostart: false,
+            cast: {},
         });
-        //player.configure({drm:{servers:{'com.widevine.alpha':'https://license.dstv.com/widevine/getLicense?CrmId=afl&AccountId=afl&ContentId=SH2&SessionId=D3C00F885C24B9C6&Ticket=C839A8D71AB94299'}}}); 
-        window.player = player;
-        window.ui = ui;
-        player.addEventListener('error', onPlayerErrorEvent);
-        controls.addEventListener('error', onUIErrorEvent);
-        try {
-          await player.load('https://nyanv-live-cdn.mncnow.id/live/eds/Soccer-2/sa_dash_vmx/Soccer-2.mpd');
-          console.log('The video has now been loaded!');
-        } catch (error) { onPlayerError(error); }
-      }
-      function onPlayerErrorEvent(errorEvent) { onPlayerError(event.detail); }
-      function onPlayerError(error) { console.error('Error code', error.code, 'object', error); }
-      function onUIErrorEvent(errorEvent) { onPlayerError(event.detail); }
-      function initFailed(errorEvent) { console.error('Unable to load the UI library!'); }
-      document.addEventListener('shaka-ui-loaded', init);
-      document.addEventListener('shaka-ui-load-failed', initFailed);
-
     </script>
 </body>
 
