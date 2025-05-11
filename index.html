@@ -1,78 +1,146 @@
+<!DOCTYPE html>
 <html>
 
 <head>
-  <meta name="referrer" content="no-referrer" />
-  <script src="https://cdn.jsdelivr.net/gh/Carryway/file@master/shaka-player.ui.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Carryway/file@master/controls.css" />
-  </script>
+  <title>Carryflix </title>
+  <link rel="icon" href="https://i.ibb.co/LpbbsYm/Untitled-1.png" type="image/png" sizes="250x250">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.1.1/shaka-player.ui.min.js"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.1.1/controls.min.css"
+    crossorigin="anonymous">
+
   <style>
     body {
-      background-color: #242424;
+      background: #2b2b2b;
+    }
+
+    /* Overflow menu style */
+    .shaka-overflow-menu {
+      background-color: #0078FF;
+      color: rgb(153, 153, 153);
+    }
+
+    .shaka-overflow-menu button:hover {
+      background-color: rgb(45, 45, 45);
+    }
+
+    .shaka-overflow-button-label {
+      color: rgb(245, 245, 245);
+    }
+
+    .shaka-current-selection-span {
+      color: rgb(202, 202, 202);
+    }
+
+    .material-icons-round {
+      color: rgb(230, 230, 230);
+    }
+
+    /* Overflow sub menu style */
+    .shaka-settings-menu {
+      background-color: rgb(35, 35, 35);
+      color: rgb(255, 255, 255);
+    }
+
+    .shaka-settings-menu button {
+      color: rgb(255, 255, 255);
+    }
+
+    .shaka-settings-menu button:hover {
+      background-color: rgb(45, 45, 45);
     }
   </style>
-  </script>
 </head>
 
-<body>
+<body bgcolor="black" style="margin:0">
   <center>
-    <div data-shaka-player-container style='width: 100%; height: 100%'>
-      <video poster="https://i.ibb.co/LpbbsYm/Untitled-1.png" data-shaka-player="" id="video"
-        style="width: 100%; height: 100%" class="shaka-video"></video>
+    <div data-shaka-player-container style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover">
+      <video autoplay playsinline data-shaka-player id="video" poster="https://i.ibb.co/LpbbsYm/Untitled-1.png"
+        style="width:100%;height:100%"></video>
     </div>
   </center>
+
   <script>
-    const youtube_theme_manifestUri =
-      "https://a39aivottlinear-a.akamaihd.net/OTTB/sin-nitro/live/clients/dash/enc/l8j2xgwt32/out/v1/fe72171ab2684ab8b9ee3e2ffcc9cff2/cenc.mpd";
-
     async function init() {
-      const video = document.getElementById("video");
-      const ui = video["ui"];
-      const config = {
-        seekBarColors: {
-          base: "#676767",
-          buffered: "#fff",
-          played: "#0078FF",
-        },
-      };
-      ui.configure(config);
+      let e = document.getElementById("video"),
+        r = e.ui,
+        n = r.getControls(),
+        o = n.getPlayer();
 
-      const controls = ui.getControls();
-      const player = controls.getPlayer();
-
-      player.configure({
+      // Faster startup and reduced buffering
+      o.configure({
         drm: {
           clearKeys: {
-            // 'key-id-in-hex': 'key-in-hex',
-            "159a2b4e1d2d7f16892d35d935a2fb34": "07809840dd0f511221ca78459167d1b3",
-          },
+            "473177ea3d394060a0d0c266521ffd68": "cb6366270ecf03b7b80aae491ef9d618",
+          }
         },
+        streaming: {
+          startAtSegmentBoundary: true, // Start playback exactly at segment boundary
+          ignoreTextStreamFailures: true, // Ignore subtitle loading issues
+          rebufferingGoal: 1, // Lower rebufferingGoal for faster resume
+          bufferingGoal: 3, // Lower bufferingGoal for faster start
+          bufferBehind: 5, // Lower bufferBehind to free memory
+          autoLowLatencyMode: true, // Enable auto low latency if available
+          lowLatencyMode: true, // Enable low-latency streaming
+          jumpLargeGaps: true, // Allow skipping over gaps in the stream
+          inaccurateManifestTolerance: 0.3, // Faster manifest synchronization
+          stallEnabled: false // Disable stall detection for faster start
+        },
+        manifest: {
+          dash: {
+            ignoreMinBufferTime: true, // Ignore minBufferTime in MPD for faster start
+            autoCorrectDrift: true // Auto-correct time drift
+          }
+        }
       });
 
+      // UI configurations
+      r.configure({
+        controlPanelElements: ["play_pause", "time_and_duration", "spacer", "language", "volume", "fullscreen", "overflow_menu"],
+        volumeBarColors: { base: '#0078FF', level: '#0078FF' },
+        seekBarColors: { base: 'rgb(41, 41, 163)', buffered: 'rgba(63, 187, 1, 1)', played: '#0078FF' }
+      });
 
-      controls.addEventListener('caststatuschanged', onCastStatusChanged);
+      window.player = o;
+      window.ui = r;
 
-      function onCastStatusChanged(event) {
-        const newCastStatus = event['newStatus'];
-        // Handle cast status change
-        console.log('The new cast status is: ' + newCastStatus);
-      }
+      o.addEventListener("error", onPlayerErrorEvent);
+      n.addEventListener("error", onUIErrorEvent);
 
+      // Load the video as quickly as possible
       try {
-        await player.load(youtube_theme_manifestUri);
-      } catch (error) { }
-
-      // TODO find a way to do this without jquery. -___- or find a way to replace them CSS. maybe usering :after
-      $(".shaka-overflow-menu-button").html("settings");
-      $(".shaka-back-to-overflow-button .material-icons-round").html(
-        "arrow_back_ios_new"
-      );
+        await o.load("https://live-cito.9c9media.ca/4ccae8216e3a581e1088eeb48416282fa95299001725016468668/f/tsn3/manifest.mpd");
+        console.log("The video has now been loaded instantly!");
+      } catch (a) {
+        onPlayerError(a);
+      }
     }
+
+    function onPlayerErrorEvent(e) {
+      onPlayerError(e.detail);
+    }
+
+    function onPlayerError(e) {
+      console.error("Error code", e.code, "object", e);
+    }
+
+    function onUIErrorEvent(e) {
+      onPlayerError(e.detail);
+    }
+
+    function initFailed(e) {
+      console.error("Unable to load the UI library!");
+    }
+
     document.addEventListener("shaka-ui-loaded", init);
+    document.addEventListener("shaka-ui-load-failed", initFailed);
+
   </script>
   <div id="floatads"
     style="width:100%;margin:auto; text-align:center;float:none;overflow:hidden; display:scroll;position:fixed; bottom:100px;z-index:9999"
     bis_skin_checked="1">
-    <div bis_skin_checked="1"><a href="https://vouribere.com/4/7895537" id="close-floatads"
+    <div bis_skin_checked="1"><a href="https://stenexeb.xyz/4/7895547" id="close-floatads"
         onclick="document.getElementById('floatads').style.display = 'none';" style="cursor:pointer;"
         target="_blank"><img
           src="https://static.vecteezy.com/system/resources/previews/008/550/626/original/closed-shop-sign-transparent-png.png"
@@ -81,27 +149,7 @@
         bis_skin_checked="1"></div>
     </div>
   </div>
-  <script>
-    // default options
-    ConsoleBan.init()
-    // custom options
-    ConsoleBan.init({
-      redirect: '/'
-    })
-  </script>
-  <script>
-    var allowedDomains = ["#", "#"];
-  </script>
-  <script>
-    // Get the domain of the current page
-    var currentDomain = location.hostname.split(".").slice(-2).join(".");
-
-    // Check if the current domain is in the list of allowed domains
-    if (allowedReferers.indexOf(document.referrer) === -1) {
-      // Redirect to an error page if the current domain is not allowed
-      window.location = "http://error.com/";
-    }
-  </script>
+  <script disable-devtool-auto src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
 </body>
 
 </html>
