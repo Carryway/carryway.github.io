@@ -1,155 +1,220 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title>Carryflix </title>
-  <link rel="icon" href="https://i.ibb.co/LpbbsYm/Untitled-1.png" type="image/png" sizes="250x250">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.1.1/shaka-player.ui.min.js"
-    crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.1.1/controls.min.css"
-    crossorigin="anonymous">
+ <meta charset="UTF-8">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title></title>
+ <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+ <style>
+ iframe{
+ width:786px;
+ height:600px;
+ border:0;
+ overflow:hidden;
+}
 
-  <style>
-    body {
-      background: #2b2b2b;
-    }
+ .collapsible{
+ background-color:rgb(255,47,47);
+ color:white;
+ cursor:pointer;
+ padding:18px;
+ width:100%;
+ border:none;
+ text-align:left;
+ outline:none;
+ font-size:15px;
+}
 
-    /* Overflow menu style */
-    .shaka-overflow-menu {
-      background-color: #0078FF;
-      color: rgb(153, 153, 153);
-    }
+ .active,
+ .collapsible:hover{
+ background-color:#555;
+}
 
-    .shaka-overflow-menu button:hover {
-      background-color: rgb(45, 45, 45);
-    }
+ .content{
+ padding:0 18px;
+ display:none;
+ overflow:hidden;
+ background-color:#00a00d;
+ color:white;
+}
 
-    .shaka-overflow-button-label {
-      color: rgb(245, 245, 245);
-    }
+ .mobile{
+ color:black;
+}
 
-    .shaka-current-selection-span {
-      color: rgb(202, 202, 202);
-    }
+ .container{
+ position:relative;
+ width:100%;
+ overflow:hidden;
+ padding-top:56.25%;
+ /* 16:9 Aspect Ratio */
+}
 
-    .material-icons-round {
-      color: rgb(230, 230, 230);
-    }
+ .responsive-iframe{
+ position:absolute;
+ top:0;
+ left:0;
+ bottom:0;
+ right:0;
+ width:100%;
+ height:100%;
+ border:none;
+ color:#536DFE;
+}
 
-    /* Overflow sub menu style */
-    .shaka-settings-menu {
-      background-color: rgb(35, 35, 35);
-      color: rgb(255, 255, 255);
-    }
+ .button{
+ -webkit-appearance:none;
+ padding:var(--btn-pad,0 17px);
+ font-family:var(--ui-font);
+ font-size:var(--btn-f-size,12px);
+ font-weight:var(--btn-f-weight,600);
+ line-height:var(--btn-l-height,var(--btn-height));
+ height:var(--btn-height);
+ letter-spacing:0.03em;
+ text-transform:uppercase;
+ text-align:center;
+ box-shadow:var(--btn-shadow);
+ transition:.25s ease-in-out;
+ background:var(--c-main);
+ color:rgb(27,192,110);
+ border:0;
+ border-radius:2px;
+ margin-bottom:5px;
+ text-decoration:none;
+}
 
-    .shaka-settings-menu button {
-      color: rgb(255, 255, 255);
-    }
+ input[type=submit]:hover,
+ button:hover,
+ input[type=reset] input[type=button]:hover,
+ .button:hover{
+ background:#161616;
+ border-color:#161616;
+ color:#fff;
+}
 
-    .shaka-settings-menu button:hover {
-      background-color: rgb(45, 45, 45);
-    }
-  </style>
+ .s-dark input[type=submit]:hover,
+ .s-dark button:hover,
+ .s-dark input[type=reset] input[type=button]:hover,
+ .s-dark .button:hover{
+ border-color:#555;
+}
+
+ button:focus{
+ outline:0;
+}
+
+ input[type="submit"]:active,
+ button:active,
+ input[type="button"]:active{
+ opacity:0.9;
+}
+
+ @keyframes blinking{
+ 0%{
+ background-color:#139da7;
+}
+
+ 20%{
+ background-color:#0b7fdd;
+}
+
+ 40%{
+ background-color:#0c3ca5;
+}
+
+ 60%{
+ background-color:#05da88;
+}
+
+ 80%{
+ background-color:#da0303;
+}
+
+ 90%{
+ background-color:#da0303;
+}
+
+ 100%{
+ background-color:#da0303;
+}
+}
+
+ #blink{
+ border-radius:5px;
+ padding:14px 28px;
+ font-size:16px;
+ animation:blinking 1s infinite;
+ color:#fff;
+}
+
+ .text-center{
+ text-align:center !important
+}
+ </style>
 </head>
 
-<body bgcolor="black" style="margin:0">
-  <center>
-    <div data-shaka-player-container style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover">
-      <video autoplay playsinline data-shaka-player id="video" poster="https://i.ibb.co/LpbbsYm/Untitled-1.png"
-        style="width:100%;height:100%"></video>
-    </div>
-  </center>
-
-  <script>
-    async function init() {
-      let e = document.getElementById("video"),
-        r = e.ui,
-        n = r.getControls(),
-        o = n.getPlayer();
-
-      // Faster startup and reduced buffering
-      o.configure({
-        drm: {
-          clearKeys: {
-            "473177ea3d394060a0d0c266521ffd68": "cb6366270ecf03b7b80aae491ef9d618",
-          }
-        },
-        streaming: {
-          startAtSegmentBoundary: true, // Start playback exactly at segment boundary
-          ignoreTextStreamFailures: true, // Ignore subtitle loading issues
-          rebufferingGoal: 1, // Lower rebufferingGoal for faster resume
-          bufferingGoal: 3, // Lower bufferingGoal for faster start
-          bufferBehind: 5, // Lower bufferBehind to free memory
-          autoLowLatencyMode: true, // Enable auto low latency if available
-          lowLatencyMode: true, // Enable low-latency streaming
-          jumpLargeGaps: true, // Allow skipping over gaps in the stream
-          inaccurateManifestTolerance: 0.3, // Faster manifest synchronization
-          stallEnabled: false // Disable stall detection for faster start
-        },
-        manifest: {
-          dash: {
-            ignoreMinBufferTime: true, // Ignore minBufferTime in MPD for faster start
-            autoCorrectDrift: true // Auto-correct time drift
-          }
+<body onload="startCountdown()">
+ <div class="blink-bg" id="blink">
+ <div class="info text-center"><a target="_blank" style="color: #fff" href="https://linktr.ee/carryflix" rel="noopener">Click here to join us Discord or Telegram</a></div>
+ </div>
+ <div>
+ <a class="button" style="margin-left: 5px;" type="button" id="btn" href="javascript:ch1();">ENG</a>
+<a class="button" style="margin-left: 5px;" type="button" id="btn" href="javascript:ch2();">HD/IOS</a>
+<a class="button" style="margin-left: 5px;" type="button" id="btn" href="javascript:ch3();">ENG</a>
+<a class="button" style="margin-left: 5px;" type="button" id="btn" href="javascript:ch4();">HD</a>
+<a class="button" style="margin-left: 5px;" type="button" id="btn" href="javascript:ch5();">HD</a>
+ </div>
+ <div id="tv" class="container">
+ <iframe src="/stacktv/fancodef1.php" class="responsive-iframe" allow="encrypted-media"
+ scrolling="no" frameborder="0" gesture="media" allowfullscreen="allowfullscreen"></iframe>
+ </div>
+ <script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+    for (i = 0; i <script coll.length; i++) {
+      coll[i].addEventListener("click", function () {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.display === "block") {
+          content.style.display = "none";
+        } else {
+          content.style.display = "block";
         }
       });
-
-      // UI configurations
-      r.configure({
-        controlPanelElements: ["play_pause", "time_and_duration", "spacer", "language", "volume", "fullscreen", "overflow_menu"],
-        volumeBarColors: { base: '#0078FF', level: '#0078FF' },
-        seekBarColors: { base: 'rgb(41, 41, 163)', buffered: 'rgba(63, 187, 1, 1)', played: '#0078FF' }
-      });
-
-      window.player = o;
-      window.ui = r;
-
-      o.addEventListener("error", onPlayerErrorEvent);
-      n.addEventListener("error", onUIErrorEvent);
-
-      // Load the video as quickly as possible
-      try {
-        await o.load("https://live-cito.9c9media.ca/4ccae8216e3a581e1088eeb48416282fa95299001725016468668/f/tsn3/manifest.mpd");
-        console.log("The video has now been loaded instantly!");
-      } catch (a) {
-        onPlayerError(a);
-      }
     }
-
-    function onPlayerErrorEvent(e) {
-      onPlayerError(e.detail);
-    }
-
-    function onPlayerError(e) {
-      console.error("Error code", e.code, "object", e);
-    }
-
-    function onUIErrorEvent(e) {
-      onPlayerError(e.detail);
-    }
-
-    function initFailed(e) {
-      console.error("Unable to load the UI library!");
-    }
-
-    document.addEventListener("shaka-ui-loaded", init);
-    document.addEventListener("shaka-ui-load-failed", initFailed);
-
   </script>
-  <div id="floatads"
-    style="width:100%;margin:auto; text-align:center;float:none;overflow:hidden; display:scroll;position:fixed; bottom:100px;z-index:9999"
-    bis_skin_checked="1">
-    <div bis_skin_checked="1"><a href="https://stenexeb.xyz/4/7895547" id="close-floatads"
-        onclick="document.getElementById('floatads').style.display = 'none';" style="cursor:pointer;"
-        target="_blank"><img
-          src="https://static.vecteezy.com/system/resources/previews/008/550/626/original/closed-shop-sign-transparent-png.png"
-          width="70"></a>
-      <div style="text-align:center;display:block;max-width:auto;height:auto;overflow:hidden;margin:auto"
-        bis_skin_checked="1"></div>
-    </div>
-  </div>
-  <script disable-devtool-auto src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
+ <script>
+    function ch1() {
+      document.getElementById("tv")
+        .innerHTML = '<iframe src="https://carryflix.icu/stacktv/fancodef1.php" class="responsive-iframe" allow="encrypted-media" scrolling="no" frameborder="0" gesture="media" allowfullscreen="allowfullscreen"></iframe>';
+    }
+    function ch2() {
+      document.getElementById("tv")
+        .innerHTML = '<iframe src="https://carryflix.icu/streams/plyr.php?id=https://live-tkr.cdnvideo.ru/tkr/fff1/mono.m3u8" class="responsive-iframe" allow="encrypted-media" scrolling="no" frameborder="0" gesture="media" allowfullscreen="allowfullscreen"></iframe>';
+    }
+    function ch3() {
+      document.getElementById("tv")
+        .innerHTML = '<iframe src="https://carryflix.icu/us/tsn5.php" class=" responsive-iframe" allow="encrypted-media" scrolling="no" frameborder="0" gesture="media" allowfullscreen="allowfullscreen"></iframe>';
+    }
+    function ch4() {
+      document.getElementById("tv")
+        .innerHTML = '<iframe src="https://carryflix.icu/playnow/play.php?id=1105" class=" responsive-iframe" allow="encrypted-media" scrolling="no" frameborder="0" gesture="media" allowfullscreen="allowfullscreen"></iframe>';
+    }
+    function ch5() {
+      document.getElementById("tv")
+        .innerHTML = '<iframe src="https://carryflix.icu/streams/iframe.html?id=https://topembed.pw/livetv/SkySportsF1[UK]" class=" responsive-iframe" allow="encrypted-media" scrolling="no" frameborder="0" gesture="media" allowfullscreen="allowfullscreen"></iframe>';
+    }
+    function ch6() {
+      document.getElementById("tv")
+        .innerHTML = '<iframe src="https://carryflix.icu/streams/iframe.html?get=https://newsdigestcap.com/g2.html" class=" responsive-iframe" allow="encrypted-media" scrolling="no" frameborder="0" gesture="media" allowfullscreen="allowfullscreen"></iframe>';
+    }
+    function ch7() {
+      document.getElementById("tv")
+        .innerHTML = '<iframe src="https://carryflix.icu/streams/clappr/feed1.php" class=" responsive-iframe" allow="encrypted-media" scrolling="no" frameborder="0" gesture="media" allowfullscreen="allowfullscreen"></iframe>';
+    }
+  </script>
 </body>
 
 </html>
