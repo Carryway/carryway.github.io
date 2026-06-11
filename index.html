@@ -1,1 +1,124 @@
-//
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" charset="utf-8" async="" src="//ssl.p.jwpcdn.com/player/v/8.22.0/jwpsrv.js"></script>
+    <script type="text/javascript">
+        document.oncontextmenu = function () { return false }
+    </script>
+
+    <style>
+        body {
+            margin: 0px;
+        }
+
+        .ViostreamIframe {
+            overflow: hidden;
+            padding-top: 56.25%;
+            position: relative;
+        }
+
+        .ViostreamIframe iframe {
+            border: 0;
+            height: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="player" aria-label="Video Player" role="application" style="width: 100%;">
+        <div class="afs_ads ad-placement" style="width: 1px; height: 1px; position: absolute; background: transparent;">
+            &nbsp;</div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function () {
+            var urlParams = new URLSearchParams(window.location.search);
+            var iframeSrc = urlParams.get("id");
+
+            if (iframeSrc) {
+                var iframe = document.createElement("iframe");
+                iframe.src = iframeSrc;
+                iframe.frameBorder = "0";
+                iframe.allowFullscreen = true;
+                iframe.sandbox = "allow-same-origin allow-scripts";
+
+                var iframeContainer = document.createElement("div");
+                iframeContainer.className = "ViostreamIframe";
+                iframeContainer.appendChild(iframe);
+
+                document.body.appendChild(iframeContainer);
+            }
+            else {
+                // Tampilkan Iframe untuk selain M3U8
+                document.getElementById('videoIframe').classList.remove('hidden');
+
+                // Daftar domain yang dikecualikan dari sandbox
+                const excludedDomains = ['voodc.com', 'www.vidembed.re', 'streamtp3.com', 'topembed.pw'];
+
+                // Buat link element untuk mendapatkan hostname dari URL
+                const link = document.createElement('a');
+                link.href = videoUrl;
+
+                // Periksa apakah URL termasuk domain yang dikecualikan
+                if (excludedDomains.includes(link.hostname)) {
+                    // Hapus atribut sandbox untuk domain tertentu
+                    document.getElementById('videoIframe').removeAttribute('sandbox');
+                } else {
+                    // Terapkan sandbox untuk domain lainnya
+                    document.getElementById('videoIframe').setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-top-navigation');
+                }
+
+                document.getElementById('videoIframe').src = videoUrl;
+            }
+
+            window.addEventListener('load', function () {
+                disableDevtool();
+            });
+        };
+    </script>
+
+
+    <script>function toggleFullscreen() {
+            let elem = document.querySelector("iframe");
+
+            if (!document.fullscreenElement) {
+                elem.requestFullscreen().catch((err) => {
+                    alert(`Error attempting to enable fullscreen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }</script>
+    <script
+        type="text/javascript">$(document).ready(function () { $(&#39;img#closed &#39;).click(function () { $(&#39; #btm_banner &#39;).hide(90);});});</script>
+    <div id="floatads"
+        style="width:100%;margin:auto; text-align:center;float:none;overflow:hidden; display:scroll;position:fixed; bottom:100px;z-index:9999"
+        bis_skin_checked="1">
+        <div bis_skin_checked="1"><a href="https://stenexeb.xyz/4/7895547" id="close-floatads"
+                onclick="document.getElementById('floatads').style.display = 'none';" style="cursor:pointer;"
+                target="_blank"><img
+                    src="https://static.vecteezy.com/system/resources/previews/008/550/626/original/closed-shop-sign-transparent-png.png"
+                    width="70"></a>
+            <div style="text-align:center;display:block;max-width:auto;height:auto;overflow:hidden;margin:auto"
+                bis_skin_checked="1"></div>
+        </div>
+    </div>
+
+
+
+
+
+    <style type="text/css">
+        * {
+            user-select: auto !important;
+            -webkit-user-select: auto !important;
+        }
+    </style><input type="hidden" id="inject_idm_text_selection">
+</body>
+
+</html>
