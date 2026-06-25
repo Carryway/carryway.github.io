@@ -8,12 +8,24 @@
     </script>
 
     <style>
+        /* SANGAT PENTING: Hilangkan margin default browser pada body */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Mencegah munculnya scrollbar di level halaman */
+            background: #000;
+        }
+
         .ViostreamIframe {
-            overflow: hidden;
-            position:relative; width:100vw;
-  height: 100vh;
-  height: 100dvh;
-  background:#000; overflow:hidden; cursor:none;
+            position: relative; 
+            width: 100%;
+            height: 100%;
+            height: 100dvh; /* Menggunakan Dynamic VH agar pas di browser HP (Chrome/Safari iOS) */
+            background: #000; 
+            overflow: hidden; 
+            cursor: none;
         }
 
         .ViostreamIframe iframe {
@@ -23,6 +35,7 @@
             position: absolute;
             top: 0;
             width: 100%;
+            overflow: hidden; /* Menghilangkan scrollbar internal bawaan iframe */
         }
     </style>
 </head>
