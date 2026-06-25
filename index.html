@@ -15,19 +15,6 @@
   background:#000; overflow:hidden; cursor:none;
 }
 #player.show-cursor { cursor:default; }
-        video {
-  width:100%; height:100%; object-fit:contain; display:block; background:#000;
-  /* Dedicated GPU layer — hardware decode + direct composition path */
-  will-change: transform;
-  transform: translate3d(0,0,0);
-  -webkit-transform: translate3d(0,0,0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  /* Strongest containment — prevents ANY surrounding repaint from touching video */
-  contain: strict;
-  isolation: isolate;
-  image-rendering: auto;
-}
 
         .ViostreamIframe {
             overflow: hidden;
