@@ -2,20 +2,34 @@
 <html>
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <script type="text/javascript" charset="utf-8" async="" src="//ssl.p.jwpcdn.com/player/v/8.22.0/jwpsrv.js"></script>
     <script type="text/javascript">
         document.oncontextmenu = function () { return false }
     </script>
 
     <style>
-        body {
-            margin: 0px;
+        /* Mengatur base agar memenuhi layar penuh tanpa scrollbar */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000; /* Background hitam khas video player */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
 
+        /* Container utama agar video tetap proporsional 16:9 dan responsive */
         .ViostreamIframe {
-            overflow: hidden;
-            padding-top: 56.25%;
             position: relative;
+            width: 100%;
+            max-width: 100%;
+            height: 0;
+            padding-top: 56.25%; /* Aspek rasio 16:9 */
         }
 
         .ViostreamIframe iframe {
@@ -26,19 +40,28 @@
             top: 0;
             width: 100%;
         }
+
+        /* Elemen tersembunyi awal jika diperlukan */
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 
 <body>
 
+    <iframe id="videoIframe" class="hidden" allowfullscreen sandbox="allow-same-origin allow-scripts" style="border:0; width:100%; height:100%; position:absolute; top:0; left:0;"></iframe>
+
     <div id="player" aria-label="Video Player" role="application" style="width: 100%;">
         <div class="afs_ads ad-placement" style="width: 1px; height: 1px; position: absolute; background: transparent;">
             &nbsp;</div>
     </div>
+
     <script type="text/javascript">
         window.onload = function () {
             var urlParams = new URLSearchParams(window.location.search);
             var iframeSrc = urlParams.get("id");
+            var videoUrl = iframeSrc; // Mengaitkan videoUrl dengan parameter id
 
             if (iframeSrc) {
                 var iframe = document.createElement("iframe");
@@ -53,9 +76,16 @@
 
                 document.body.appendChild(iframeContainer);
             }
-            else {
+            else if (typeof videoUrl !== 'undefined' && videoUrl) {
                 // Tampilkan Iframe untuk selain M3U8
-                document.getElementById('videoIframe').classList.remove('hidden');
+                var fallbackIframe = document.getElementById('videoIframe');
+                fallbackIframe.classList.remove('hidden');
+
+                // Memasukkan iframe bawaan ke dalam container responsive secara dinamis
+                var iframeContainer = document.createElement("div");
+                iframeContainer.className = "ViostreamIframe";
+                fallbackIframe.parentNode.insertBefore(iframeContainer, fallbackIframe);
+                iframeContainer.appendChild(fallbackIframe);
 
                 // Daftar domain yang dikecualikan dari sandbox
                 const excludedDomains = ['voodc.com', 'www.vidembed.re', 'streamtp3.com', 'topembed.pw'];
@@ -66,24 +96,18 @@
 
                 // Periksa apakah URL termasuk domain yang dikecualikan
                 if (excludedDomains.includes(link.hostname)) {
-                    // Hapus atribut sandbox untuk domain tertentu
-                    document.getElementById('videoIframe').removeAttribute('sandbox');
+                    fallbackIframe.removeAttribute('sandbox');
                 } else {
-                    // Terapkan sandbox untuk domain lainnya
-                    document.getElementById('videoIframe').setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-top-navigation');
+                    fallbackIframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-top-navigation');
                 }
 
-                document.getElementById('videoIframe').src = videoUrl;
+                fallbackIframe.src = videoUrl;
             }
-
-            window.addEventListener('load', function () {
-                disableDevtool();
-            });
         };
     </script>
 
-
-    <script>function toggleFullscreen() {
+    <script>
+        function toggleFullscreen() {
             let elem = document.querySelector("iframe");
 
             if (!document.fullscreenElement) {
@@ -93,20 +117,8 @@
             } else {
                 document.exitFullscreen();
             }
-        }</script>
-    <script
-        type="text/javascript">$(document).ready(function () { $(&#39;img#closed &#39;).click(function () { $(&#39; #btm_banner &#39;).hide(90);});});</script>
-
-
-
-
-
-    <style type="text/css">
-        * {
-            user-select: auto !important;
-            -webkit-user-select: auto !important;
         }
-    </style><input type="hidden" id="inject_idm_text_selection">
+    </script>
 </body>
 
 </html>
